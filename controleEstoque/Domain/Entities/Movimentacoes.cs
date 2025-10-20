@@ -10,6 +10,6 @@ namespace controleEstoque.Domain.Entidades
         public Material Material { get; set; }
         public int Quantidade { get; set; }
         public EnumTipo Tipo { get; set; } // "Entrada" ou "Saída"
-        public DateTime Data { get; set; }
+        public DateOnly Data { get; set; }
     }
 }

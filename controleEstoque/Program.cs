@@ -238,7 +238,7 @@ app.MapPost("movimentacao/adicionar", (EstoqueContext context, MovimentacaoAdici
     var movimentacao = new Movimentacoes
     {
         Id = Guid.NewGuid(),
-        Data = DateTime.Now,
+        Data = movimentacaoDTO.Data,
         Quantidade = movimentacaoDTO.Quantidade,
         Tipo = movimentacaoDTO.Tipo,
         MaterialId = movimentacaoDTO.MaterialId,

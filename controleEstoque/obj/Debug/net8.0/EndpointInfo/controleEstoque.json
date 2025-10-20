@@ -440,6 +440,10 @@
           },
           "tipo": {
             "$ref": "#/components/schemas/EnumTipo"
+          },
+          "data": {
+            "type": "string",
+            "format": "date"
           }
         },
         "additionalProperties": false

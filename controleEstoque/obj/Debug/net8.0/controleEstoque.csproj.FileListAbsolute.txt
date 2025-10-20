@@ -346,3 +346,4 @@ C:\Users\Usuario\Desktop\api tcc\controleEstoque\controleEstoque\obj\Debug\net8.
 C:\Users\Usuario\Desktop\api tcc\controleEstoque\controleEstoque\obj\Debug\net8.0\controleEstoque.genruntimeconfig.cache
 C:\Users\Usuario\Desktop\api tcc\controleEstoque\controleEstoque\obj\Debug\net8.0\ref\controleEstoque.dll
 C:\Users\Usuario\Desktop\api tcc\controleEstoque\controleEstoque\bin\Debug\net8.0\Microsoft.AspNetCore.Authentication.JwtBearer.dll
+C:\Users\Usuario\Desktop\api tcc\controleEstoque\controleEstoque\obj\Debug\net8.0\controleEstoque.sourcelink.json
