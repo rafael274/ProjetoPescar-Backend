@@ -19,6 +19,9 @@ namespace controleEstoque.Infra.Configuration
             builder.Property(m => m.Data)
                 .IsRequired();
 
+            builder.Property(m => m.usuarioId)
+                .IsRequired();
+
             builder.HasOne(m => m.Material)
                 .WithMany(mat => mat.Movimentacoes)
                 .HasForeignKey(m => m.MaterialId);

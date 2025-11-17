@@ -1,4 +1,4 @@
-using controleEstoque.Domain.DTOs.Categoria;
+using controleEstoque.Domain.DTOs.GerarSenha;
 using controleEstoque.Domain.DTOs.Login;
 using controleEstoque.Domain.DTOs.Materiais;
 using controleEstoque.Domain.DTOs.Movimentacoes;
@@ -13,7 +13,9 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.IdentityModel.Tokens.Jwt;
+using System.Net.Mail;
 using System.Security.Claims;
+using System.Security.Cryptography;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -79,8 +81,11 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     };
 });
 
-builder.Services.AddAuthorization();
-
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("Administrador", policy => policy.RequireRole("Administrador"));
+    options.AddPolicy("Usuario", policy => policy.RequireRole("Usuario", "Administrador"));
+});
 builder.Services.AddCors();
 
 var app = builder.Build();
@@ -94,58 +99,6 @@ app.UseCors(x => x
 .AllowAnyMethod() 
 .AllowAnyHeader());
 
-#region Endpoints Categoria
-
-app.MapPost("Categoria/adicionar", (EstoqueContext context, CategoriaAdicionarDTO categoriaDTO) =>
-{
-    var categoria = new Categoria
-    {
-        Id = Guid.NewGuid(),
-        Nome = categoriaDTO.Nome,
-
-    };
-
-    context.CategoriasSet.Add(categoria);
-    context.SaveChanges();
-    return Results.Created("Created", "Categoria registrada com sucesso");
-}).RequireAuthorization().WithTags("Categoria");
-
-app.MapGet("Categoria/listar", (EstoqueContext context) =>
-{
-    var categorias = context.CategoriasSet.Select(categoria => new CategoriaListarDTO
-    {
-        Id = categoria.Id,
-        Nome = categoria.Nome
-    }).ToList();
-    return Results.Ok(categorias);
-}).RequireAuthorization().WithTags("Categoria");
-
-app.MapPut("Categoria/atualizar", (EstoqueContext context, CategoriaAtualizarDto categoriaDTO) =>
-{
-    var categoria = context.CategoriasSet.Find(categoriaDTO.Id);
-    if (categoria == null)
-    {
-        return Results.NotFound("Categoria não encontrada");
-    }
-    categoria.Nome = categoriaDTO.Nome;
-    context.SaveChanges();
-    return Results.Ok("Categoria atualizada com sucesso");
-}).RequireAuthorization().WithTags("Categoria");
-
-app.MapDelete("Categoria/remover/{id:guid}", (EstoqueContext context, Guid id) =>
-{
-    var categoria = context.CategoriasSet.Find(id);
-    if (categoria == null)
-    {
-        return Results.NotFound("Categoria não encontrada");
-    }
-    context.CategoriasSet.Remove(categoria);
-    context.SaveChanges();
-    return Results.Ok("Categoria removida com sucesso");
-}).RequireAuthorization().WithTags("Categoria");
-
-#endregion
-
 #region Endpoints Materiais
 
 app.MapPost("material/adicionar", (EstoqueContext context, MaterialAdicionarDTO materialDTO) =>
@@ -157,7 +110,6 @@ app.MapPost("material/adicionar", (EstoqueContext context, MaterialAdicionarDTO 
         Descricao = materialDTO.Descricao,
         Quantidade = materialDTO.Quantidade,
         EstoqueMinimo = materialDTO.EstoqueMinimo,
-        CategoriaId = materialDTO.CategoriaId,
     };
     context.MateriaisSet.Add(material);
     context.SaveChanges();
@@ -175,7 +127,6 @@ app.MapPut("material/atualizar", (EstoqueContext context, MaterialAtualizarDTO m
     material.Descricao = materialDTO.Descricao;
     material.Quantidade = materialDTO.Quantidade;
     material.EstoqueMinimo = materialDTO.EstoqueMinimo;
-    material.CategoriaId = materialDTO.CategoriaId;
     context.SaveChanges();
     return Results.Ok("Material atualizado com sucesso");
 }).RequireAuthorization().WithTags("Materiais");
@@ -188,9 +139,7 @@ app.MapGet("material/listar", (EstoqueContext context) =>
         Nome = material.Nome,
         Descricao = material.Descricao,
         Quantidade = material.Quantidade,
-        EstoqueMinimo = material.EstoqueMinimo,
-        CategoriaId = material.CategoriaId,
-        Categoria = material.Categoria.Nome
+        EstoqueMinimo = material.EstoqueMinimo
     }).ToList();
 
     return Results.Ok(materiais);
@@ -242,6 +191,7 @@ app.MapPost("movimentacao/adicionar", (EstoqueContext context, MovimentacaoAdici
         Quantidade = movimentacaoDTO.Quantidade,
         Tipo = movimentacaoDTO.Tipo,
         MaterialId = movimentacaoDTO.MaterialId,
+        usuarioId = movimentacaoDTO.usuarioId
     };
 
     context.MovimentacoesSet.Add(movimentacao);
@@ -257,7 +207,8 @@ app.MapGet("movimentacao/listar", (EstoqueContext context) =>
         Data = movimentacao.Data,
         Quantidade = movimentacao.Quantidade,
         Tipo = movimentacao.Tipo,
-        Material = movimentacao.Material.Nome
+        Material = movimentacao.Material.Nome,
+        usuarioId = movimentacao.usuarioId
     }).ToList();
     return Results.Ok(movimentacoes);
 }).RequireAuthorization().WithTags("Movimentacoes");
@@ -292,12 +243,14 @@ app.MapPost("usuario/adicionar", (EstoqueContext context, UsuarioAdicionarDTO us
         Id = Guid.NewGuid(),
         Nome = usuarioDTO.Nome,
         Email = usuarioDTO.Email,
-        Senha = usuarioDTO.Senha.EncryptPassword()
+        Perfil = EnumPerfil.Usuario,
+        Senha = usuarioDTO.Senha.EncryptPassword(),
+        usuarioImagem = usuarioDTO.usuarioImagem
     };
     context.UsuariosSet.Add(usuario);
     context.SaveChanges();
     return Results.Created("Created", "Usuário registrado com sucesso");
-}).RequireAuthorization().WithTags("Usuário");
+}).RequireAuthorization("Administrador").WithTags("Usuário");
 
 app.MapGet("usuario/listar", (EstoqueContext context) =>
 {
@@ -305,11 +258,31 @@ app.MapGet("usuario/listar", (EstoqueContext context) =>
     {
         Id = usuario.Id,
         Nome = usuario.Nome,
-        Email = usuario.Email
+        Email = usuario.Email,
+        Perfil = usuario.Perfil.ToString(),
+        usuarioImagem = usuario.usuarioImagem
     }).ToList();
     return Results.Ok(usuarios);
 }).RequireAuthorization().WithTags("Usuário");
+app.MapGet("usuario/{id:guid}", (EstoqueContext context, Guid id) =>
+{
+    var usuario = context.UsuariosSet
+        .Where(u => u.Id == id)
+        .Select(u => new UsuarioListarDTO
+        {
+            Id = u.Id,
+            Nome = u.Nome,
+            Email = u.Email,
+            Perfil = u.Perfil.ToString(),
+            usuarioImagem = u.usuarioImagem
+        })
+        .FirstOrDefault();
 
+    if (usuario == null)
+        return Results.NotFound("Usuário não encontrado");
+
+    return Results.Ok(usuario);
+}).RequireAuthorization().WithTags("Usuário");
 app.MapPut("usuario/atualizar", (EstoqueContext context, UsuarioAtualizarDTO usuarioDTO) =>
 {
     var usuario = context.UsuariosSet.Find(usuarioDTO.Id);
@@ -319,6 +292,7 @@ app.MapPut("usuario/atualizar", (EstoqueContext context, UsuarioAtualizarDTO usu
     }
     usuario.Nome = usuarioDTO.Nome;
     usuario.Email = usuarioDTO.Email;
+    usuario.usuarioImagem =  usuarioDTO.usuarioImagem;
     context.SaveChanges();
     return Results.Ok("Usuário atualizado com sucesso");
 }).RequireAuthorization().WithTags("Usuário");
@@ -333,7 +307,51 @@ app.MapDelete("usuario/remover/{id:guid}", (EstoqueContext context, Guid id) =>
     context.UsuariosSet.Remove(usuario);
     context.SaveChanges();
     return Results.Ok("Usuário removido com sucesso");
-}).RequireAuthorization().WithTags("Usuário");
+}).RequireAuthorization("Administrador").WithTags("Usuário");
+
+/// Novo endpoint: gera senha nova de 6 caracteres, atualiza no banco (criptografada) e retorna a senha no response
+app.MapPost("usuario/gerar-senha", (EstoqueContext context, GerarSenhaDto dto) =>
+{
+    if (dto == null)
+        return Results.BadRequest(new { sucesso = false, mensagem = "Requisição inválida" });
+
+    if (!Guid.TryParse(dto.UsuarioId, out var usuarioGuid))
+        return Results.BadRequest(new { sucesso = false, mensagem = "usuarioId inválido" });
+
+    if (string.IsNullOrWhiteSpace(dto.Email))
+        return Results.BadRequest(new { sucesso = false, mensagem = "Email é obrigatório" });
+
+    var usuario = context.UsuariosSet.Find(usuarioGuid);
+    if (usuario == null)
+        return Results.NotFound(new { sucesso = false, mensagem = "Usuário não encontrado" });
+
+    if (!string.Equals(usuario.Email?.Trim(), dto.Email.Trim(), StringComparison.InvariantCultureIgnoreCase))
+        return Results.BadRequest(new { sucesso = false, mensagem = "usuarioId e email não correspondem" });
+
+    // Gera senha segura de 6 caracteres (números + letras maiúsculas/minúsculas)
+    string GeneratePassword(int length = 6)
+    {
+        const string chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+        var data = new byte[length];
+        using var rng = RandomNumberGenerator.Create();
+        rng.GetBytes(data);
+        var result = new char[length];
+        for (int i = 0; i < length; i++)
+        {
+            var idx = data[i] % chars.Length;
+            result[i] = chars[idx];
+        }
+        return new string(result);
+    }
+
+    var novaSenha = GeneratePassword(6);
+
+    // Atualiza senha no banco (criptografada) e retorna a senha gerada
+    usuario.Senha = novaSenha.EncryptPassword();
+    context.SaveChanges();
+
+    return Results.Ok(new { sucesso = true, mensagem = "Senha gerada com sucesso", senhaGerada = novaSenha });
+}).RequireAuthorization("Administrador").WithTags("Usuário");
 #endregion
 
 #region Endpoints Segurança
@@ -349,6 +367,8 @@ app.MapPost("autenticar", (EstoqueContext context, LoginDto loginDto) =>
         new Claim("Id", usuario.Id.ToString()),
         new Claim("Nome", usuario.Nome),
         new Claim("Email", usuario.Email),
+        new Claim(ClaimTypes.Role, usuario.Perfil.ToString()),
+        new Claim("Perfil", usuario.Perfil.ToString()),
     };
 
     var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("{68a60669-f584-4470-ad36-e77cc33cfee1}"));
@@ -367,9 +387,32 @@ app.MapPost("autenticar", (EstoqueContext context, LoginDto loginDto) =>
     .WriteToken(token));
 }).WithTags("Segurança");
 
+// Seed: cria um admin fixo se não existir
+using (var scope = app.Services.CreateScope())
+{
+    var context = scope.ServiceProvider.GetRequiredService<EstoqueContext>();
+
+    var adminEmail = "admin@admin";
+    var adminSenhaPlain = "Admin@123";
+    var admin = context.UsuariosSet.FirstOrDefault(u => u.Email == adminEmail);
+
+    if (admin == null)
+    {
+        context.UsuariosSet.Add(new Usuario
+        {
+            Id = Guid.NewGuid(),
+            Nome = "Administrador",
+            Email = adminEmail,
+            Senha = adminSenhaPlain.EncryptPassword(),
+            Perfil = EnumPerfil.Administrador
+        });
+        context.SaveChanges();
+    }
+}
 
 #endregion
 app.UseHttpsRedirection();
 app.UseAuthorization();
 app.MapControllers();
+
 app.Run();

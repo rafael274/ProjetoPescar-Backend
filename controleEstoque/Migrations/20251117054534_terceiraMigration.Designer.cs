@@ -12,8 +12,8 @@ using controleEstoque.Infra.Context;
 namespace controleEstoque.Migrations
 {
     [DbContext(typeof(EstoqueContext))]
-    [Migration("20251006042719_AddDataColumnToMovimentacoes")]
-    partial class AddDataColumnToMovimentacoes
+    [Migration("20251117054534_terceiraMigration")]
+    partial class terceiraMigration
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -25,29 +25,10 @@ namespace controleEstoque.Migrations
 
             MySqlModelBuilderExtensions.AutoIncrementColumns(modelBuilder);
 
-            modelBuilder.Entity("controleEstoque.Domain.Entidades.Categoria", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("char(36)");
-
-                    b.Property<string>("Nome")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("varchar(100)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("TBCategorias", (string)null);
-                });
-
             modelBuilder.Entity("controleEstoque.Domain.Entidades.Material", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("char(36)");
-
-                    b.Property<Guid>("CategoriaId")
                         .HasColumnType("char(36)");
 
                     b.Property<string>("Descricao")
@@ -68,8 +49,6 @@ namespace controleEstoque.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CategoriaId");
-
                     b.ToTable("Materiais", (string)null);
                 });
 
@@ -79,8 +58,8 @@ namespace controleEstoque.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("char(36)");
 
-                    b.Property<DateTime>("Data")
-                        .HasColumnType("datetime(6)");
+                    b.Property<DateOnly>("Data")
+                        .HasColumnType("date");
 
                     b.Property<Guid>("MaterialId")
                         .HasColumnType("char(36)");
@@ -90,6 +69,10 @@ namespace controleEstoque.Migrations
 
                     b.Property<int>("Tipo")
                         .HasColumnType("int");
+
+                    b.Property<string>("usuarioId")
+                        .IsRequired()
+                        .HasColumnType("longtext");
 
                     b.HasKey("Id");
 
@@ -139,25 +122,21 @@ namespace controleEstoque.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("varchar(100)");
 
+                    b.Property<int>("Perfil")
+                        .HasColumnType("int");
+
                     b.Property<string>("Senha")
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("varchar(100)");
 
+                    b.Property<string>("usuarioImagem")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
                     b.HasKey("Id");
 
                     b.ToTable("Usuarios", (string)null);
-                });
-
-            modelBuilder.Entity("controleEstoque.Domain.Entidades.Material", b =>
-                {
-                    b.HasOne("controleEstoque.Domain.Entidades.Categoria", "Categoria")
-                        .WithMany("Materiais")
-                        .HasForeignKey("CategoriaId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Categoria");
                 });
 
             modelBuilder.Entity("controleEstoque.Domain.Entidades.Movimentacoes", b =>
@@ -179,11 +158,6 @@ namespace controleEstoque.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Materiais");
-                });
-
-            modelBuilder.Entity("controleEstoque.Domain.Entidades.Categoria", b =>
-                {
                     b.Navigation("Materiais");
                 });
 

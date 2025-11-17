@@ -1,9 +1,9 @@
 {
   "Version": 1,
-  "WorkspaceRootPath": "C:\\Users\\Usuario\\Desktop\\api tcc\\controleEstoque\\",
+  "WorkspaceRootPath": "C:\\Users\\Usuario\\Desktop\\back\\ProjetoPescar-Backend\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{380D07A0-9F87-4E33-BD8C-7F13D59CB976}|controleEstoque\\controleEstoque.csproj|c:\\users\\usuario\\desktop\\api tcc\\controleestoque\\controleestoque\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{380D07A0-9F87-4E33-BD8C-7F13D59CB976}|controleEstoque\\controleEstoque.csproj|c:\\users\\usuario\\desktop\\back\\projetopescar-backend\\controleestoque\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{380D07A0-9F87-4E33-BD8C-7F13D59CB976}|controleEstoque\\controleEstoque.csproj|solutionrelative:controleestoque\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
   ],
@@ -20,11 +20,11 @@
               "$type": "Document",
               "DocumentIndex": 0,
               "Title": "Program.cs",
-              "DocumentMoniker": "C:\\Users\\Usuario\\Desktop\\api tcc\\controleEstoque\\controleEstoque\\Program.cs",
+              "DocumentMoniker": "C:\\Users\\Usuario\\Desktop\\back\\ProjetoPescar-Backend\\controleEstoque\\Program.cs",
               "RelativeDocumentMoniker": "controleEstoque\\Program.cs",
-              "ToolTip": "C:\\Users\\Usuario\\Desktop\\api tcc\\controleEstoque\\controleEstoque\\Program.cs",
+              "ToolTip": "C:\\Users\\Usuario\\Desktop\\back\\ProjetoPescar-Backend\\controleEstoque\\Program.cs",
               "RelativeToolTip": "controleEstoque\\Program.cs",
-              "ViewState": "AgIAAOEAAAAAAAAAAAAAAOcAAAAJAAAAAAAAAA==",
+              "ViewState": "AgIAAAQBAAAAAAAAAAAiwAwBAAAlAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-10-06T04:14:27.658Z",
               "EditorCaption": ""

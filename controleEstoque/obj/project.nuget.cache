@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "lNJRS9Ka50k=",
+  "dgSpecHash": "UydcLcvbyX4=",
   "success": true,
-  "projectFilePath": "C:\\Users\\Usuario\\Desktop\\api tcc\\controleEstoque\\controleEstoque\\controleEstoque.csproj",
+  "projectFilePath": "C:\\Users\\Usuario\\Desktop\\back\\ProjetoPescar-Backend\\controleEstoque\\controleEstoque.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\Usuario\\.nuget\\packages\\azure.core\\1.38.0\\azure.core.1.38.0.nupkg.sha512",
     "C:\\Users\\Usuario\\.nuget\\packages\\azure.identity\\1.11.4\\azure.identity.1.11.4.nupkg.sha512",

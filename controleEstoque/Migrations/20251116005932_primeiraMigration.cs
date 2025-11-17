@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace controleEstoque.Migrations
 {
     /// <inheritdoc />
-    public partial class PrimeiraMigration : Migration
+    public partial class primeiraMigration : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -37,12 +37,9 @@ namespace controleEstoque.Migrations
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     Email = table.Column<string>(type: "varchar(100)", maxLength: 100, nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    Tipo = table.Column<string>(type: "longtext", nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
                     Senha = table.Column<string>(type: "varchar(100)", maxLength: 100, nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    ConfirmarSenha = table.Column<string>(type: "varchar(100)", maxLength: 100, nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4")
+                    Perfil = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -61,14 +58,14 @@ namespace controleEstoque.Migrations
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     Quantidade = table.Column<int>(type: "int", nullable: false),
                     EstoqueMinimo = table.Column<int>(type: "int", nullable: false),
-                    categoriaId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci")
+                    CategoriaId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci")
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Materiais", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Materiais_TBCategorias_categoriaId",
-                        column: x => x.categoriaId,
+                        name: "FK_Materiais_TBCategorias_CategoriaId",
+                        column: x => x.CategoriaId,
                         principalTable: "TBCategorias",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -80,26 +77,18 @@ namespace controleEstoque.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
-                    Tipo = table.Column<string>(type: "varchar(20)", maxLength: 20, nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    MateriaId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
-                    UsuarioId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
+                    MaterialId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
                     Quantidade = table.Column<int>(type: "int", nullable: false),
-                    DataMovimentacao = table.Column<DateTime>(type: "datetime(6)", nullable: false)
+                    Tipo = table.Column<int>(type: "int", nullable: false),
+                    Data = table.Column<DateOnly>(type: "date", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Movimentacoes", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Movimentacoes_Materiais_MateriaId",
-                        column: x => x.MateriaId,
+                        name: "FK_Movimentacoes_Materiais_MaterialId",
+                        column: x => x.MaterialId,
                         principalTable: "Materiais",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Movimentacoes_Usuarios_UsuarioId",
-                        column: x => x.UsuarioId,
-                        principalTable: "Usuarios",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 })
@@ -113,8 +102,7 @@ namespace controleEstoque.Migrations
                     MateriaisId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
                     TotalEntradas = table.Column<int>(type: "int", nullable: false),
                     TotalSaidas = table.Column<int>(type: "int", nullable: false),
-                    PeriodoReferencia = table.Column<DateTime>(type: "datetime(6)", nullable: false),
-                    UsuarioId = table.Column<Guid>(type: "char(36)", nullable: true, collation: "ascii_general_ci")
+                    PeriodoReferencia = table.Column<DateTime>(type: "datetime(6)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -125,38 +113,23 @@ namespace controleEstoque.Migrations
                         principalTable: "Materiais",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Relatorios_Usuarios_UsuarioId",
-                        column: x => x.UsuarioId,
-                        principalTable: "Usuarios",
-                        principalColumn: "Id");
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Materiais_categoriaId",
+                name: "IX_Materiais_CategoriaId",
                 table: "Materiais",
-                column: "categoriaId");
+                column: "CategoriaId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Movimentacoes_MateriaId",
+                name: "IX_Movimentacoes_MaterialId",
                 table: "Movimentacoes",
-                column: "MateriaId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Movimentacoes_UsuarioId",
-                table: "Movimentacoes",
-                column: "UsuarioId");
+                column: "MaterialId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Relatorios_MateriaisId",
                 table: "Relatorios",
                 column: "MateriaisId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Relatorios_UsuarioId",
-                table: "Relatorios",
-                column: "UsuarioId");
         }
 
         /// <inheritdoc />
@@ -169,10 +142,10 @@ namespace controleEstoque.Migrations
                 name: "Relatorios");
 
             migrationBuilder.DropTable(
-                name: "Materiais");
+                name: "Usuarios");
 
             migrationBuilder.DropTable(
-                name: "Usuarios");
+                name: "Materiais");
 
             migrationBuilder.DropTable(
                 name: "TBCategorias");

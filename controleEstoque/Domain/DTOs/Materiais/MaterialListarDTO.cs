@@ -7,8 +7,6 @@
         public string Descricao { get; set; }
         public int Quantidade { get; set; }
         public int EstoqueMinimo { get; set; }
-        public Guid CategoriaId { get; set; }
-        public string Categoria { get; set; }
 
     }
 }

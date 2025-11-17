@@ -7,7 +7,6 @@ namespace controleEstoque.Infra.Context
 {
     public class EstoqueContext : DbContext
     {
-        public DbSet<Categoria> CategoriasSet { get; set; }
         public DbSet<Material> MateriaisSet { get; set; }
         public DbSet<Usuario> UsuariosSet { get; set; }
         public DbSet<Movimentacoes> MovimentacoesSet { get; set; }
@@ -15,7 +14,6 @@ namespace controleEstoque.Infra.Context
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.ApplyConfiguration(new CategoriaConfigurations());
             modelBuilder.ApplyConfiguration(new MateriaisConfigurations());
             modelBuilder.ApplyConfiguration(new UsuarioConfigurations());
             modelBuilder.ApplyConfiguration(new MovimentacoesConfigurations());

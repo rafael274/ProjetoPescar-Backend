@@ -24,10 +24,6 @@ namespace controleEstoque.Infra.Configuration
             builder.Property(m => m.EstoqueMinimo)
                 .IsRequired();
 
-            builder.HasOne(m => m.Categoria)
-                .WithMany(c => c.Materiais)
-                .HasForeignKey(m => m.CategoriaId);
-
             builder.ToTable("Materiais");
 
         }

@@ -8,6 +8,8 @@ namespace controleEstoque.Domain.DTOs.Movimentacoes
         public DateOnly Data { get; set; }
         public int Quantidade { get; set; }
         public EnumTipo Tipo { get; set; }
-        public string Material { get; set; }
+        public string Material { get; set; } = string.Empty;
+        public string usuarioId { get; set; } = string.Empty;
+
     }
 }

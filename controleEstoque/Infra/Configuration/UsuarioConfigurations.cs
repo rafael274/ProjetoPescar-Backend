@@ -18,6 +18,12 @@ namespace controleEstoque.Infra.Configuration
                 .IsRequired()
                 .HasMaxLength(100);
 
+            Builder.Property(u => u.Perfil)
+                .IsRequired();
+
+            Builder.Property(u => u.usuarioImagem)
+                .IsRequired();
+
             Builder.Property(u => u.Senha)
                 .IsRequired()
                 .HasMaxLength(100);
